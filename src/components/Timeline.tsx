@@ -4,92 +4,102 @@ import '../styles/Timeline.css';
 
 type Category = 'legal' | 'research' | 'incident' | 'awareness' | 'technology';
 
+const CAT_CONFIG: Record<Category | 'all', { label: string; color: string; bg: string }> = {
+  all:        { label: 'Todos',         color: '#3d6b52', bg: '#3d6b52' },
+  legal:      { label: 'Marco Legal',   color: '#c0392b', bg: '#c0392b' },
+  research:   { label: 'Investigación', color: '#1976d2', bg: '#1976d2' },
+  incident:   { label: 'Incidente',     color: '#d35400', bg: '#d35400' },
+  awareness:  { label: 'Conciencia',    color: '#3d6b52', bg: '#3d6b52' },
+  technology: { label: 'Tecnología',    color: '#7b1fa2', bg: '#7b1fa2' },
+};
+
 const Timeline: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
+  const [active, setActive] = useState<Category | 'all'>('all');
 
   const filtered = useMemo(() => {
-    if (selectedCategory === 'all') return timelineEvents;
-    return timelineEvents.filter(e => e.category === selectedCategory);
-  }, [selectedCategory]);
-
-  const categoryColors: Record<Category, string> = {
-    legal: '#e74c3c',
-    research: '#3498db',
-    incident: '#e67e22',
-    awareness: '#2ecc71',
-    technology: '#9b59b6'
-  };
-
-  const categoryLabels: Record<Category, string> = {
-    legal: 'Marco Legal',
-    research: 'Investigación',
-    incident: 'Incidente',
-    awareness: 'Conciencia',
-    technology: 'Tecnología'
-  };
+    return active === 'all'
+      ? timelineEvents
+      : timelineEvents.filter(e => e.category === active);
+  }, [active]);
 
   return (
-    <section className="timeline">
-      <div className="timeline-header">
-        <h2>Timeline: Historia de la Violencia Digital</h2>
-        <p>Evolución del problema y respuestas sociales desde 2005</p>
-      </div>
+    <section className="timeline-section">
+      <div className="timeline-inner">
+        <span className="section-label">Cronología 2005–2024</span>
+        <h2 className="section-title">Historia de la Violencia Digital</h2>
+        <p className="section-desc">
+          Desde las primeras investigaciones académicas hasta la legislación más reciente.
+          Los hitos que marcaron la visibilidad del problema.
+        </p>
 
-      <div className="timeline-filters">
-        <button
-          className={`filter-btn ${selectedCategory === 'all' ? 'active' : ''}`}
-          onClick={() => setSelectedCategory('all')}
-        >
-          Todos
-        </button>
-        {(Object.keys(categoryLabels) as Category[]).map((cat) => (
-          <button
-            key={cat}
-            className={`filter-btn ${selectedCategory === cat ? 'active' : ''}`}
-            onClick={() => setSelectedCategory(cat)}
-            style={{
-              borderColor: categoryColors[cat],
-              color: selectedCategory === cat ? '#fff' : categoryColors[cat],
-              backgroundColor: selectedCategory === cat ? categoryColors[cat] : 'transparent'
-            }}
-          >
-            {categoryLabels[cat]}
-          </button>
-        ))}
-      </div>
-
-      <div className="timeline-container">
-        {filtered.map((event, index) => (
-          <div 
-            key={event.id}
-            className={`timeline-event timeline-${event.category}`}
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            <div className="event-marker" style={{ backgroundColor: categoryColors[event.category] }}>
-              <span className="marker-year">{event.year}</span>
-            </div>
-
-            <div className="event-content">
-              <div className="event-date">
-                {event.month} {event.year}
-              </div>
-
-              <h3>{event.title}</h3>
-              <p>{event.description}</p>
-
-              <div className="event-impact">
-                <strong>Impacto Global:</strong> {event.impact}
-              </div>
-
-              <span 
-                className="event-category"
-                style={{ backgroundColor: categoryColors[event.category] }}
+        {/* Filters */}
+        <div className="timeline-filters">
+          {(Object.keys(CAT_CONFIG) as (Category | 'all')[]).map(cat => {
+            const cfg = CAT_CONFIG[cat];
+            return (
+              <button
+                key={cat}
+                className={`timeline-filter-btn ${active === cat ? 'active' : ''}`}
+                style={active === cat ? { background: cfg.bg, borderColor: cfg.bg } : {}}
+                onClick={() => setActive(cat)}
               >
-                {categoryLabels[event.category]}
-              </span>
-            </div>
-          </div>
-        ))}
+                <span
+                  className="filter-dot"
+                  style={{ background: active === cat ? 'white' : cfg.color }}
+                />
+                {cfg.label}
+                {active === cat && ` (${filtered.length})`}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Track */}
+        <div className="timeline-track">
+          {filtered.length === 0 && (
+            <div className="timeline-empty">No hay eventos para este filtro.</div>
+          )}
+
+          {filtered.map((event, i) => {
+            const cfg = CAT_CONFIG[event.category];
+            return (
+              <div
+                key={event.id}
+                className="timeline-event"
+                style={{ animationDelay: `${i * 0.07}s` }}
+              >
+                {/* Dot */}
+                <div
+                  className="timeline-dot"
+                  style={{ color: cfg.color, background: cfg.color }}
+                />
+
+                {/* Card */}
+                <div className="timeline-card">
+                  <div className="timeline-card-top">
+                    <div className="timeline-date">
+                      <span className="timeline-year-badge">{event.year}</span>
+                      {event.month}
+                    </div>
+                    <span
+                      className="timeline-cat-badge"
+                      style={{ background: cfg.bg }}
+                    >
+                      {cfg.label}
+                    </span>
+                  </div>
+
+                  <h3>{event.title}</h3>
+                  <p>{event.description}</p>
+
+                  <div className="timeline-impact">
+                    <strong>Impacto:</strong> {event.impact}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

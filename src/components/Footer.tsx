@@ -2,61 +2,68 @@ import React from 'react';
 import '../styles/Footer.css';
 
 const Footer: React.FC = () => {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
     <footer className="footer">
-      <div className="footer-content">
-        <div className="footer-section">
-          <h4>VDCM</h4>
-          <p>
-            Una plataforma dedicada a concienciar, informar y proporcionar 
-            recursos contra la violencia digital contra la mujer.
+      <div className="footer-inner">
+        <div className="footer-grid">
+          {/* Brand */}
+          <div>
+            <div className="footer-brand-name">
+              <div className="footer-brand-icon">H</div>
+              HER City
+            </div>
+            <p className="footer-brand-desc">
+              Plataforma de datos abiertos dedicada a la concienciación, documentación
+              y acción frente a la violencia digital contra la mujer.
+            </p>
+          </div>
+
+          {/* Fuentes */}
+          <div>
+            <span className="footer-col-title">Fuentes de Datos</span>
+            <ul className="footer-list">
+              {['ONU Mujeres','WHO','UNESCO','Pew Research Center','FBI / Interpol','Mossos d\'Esquadra','Sensity AI','Thorn','Amnesty International'].map(s => (
+                <li key={s}>{s}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Recursos */}
+          <div>
+            <span className="footer-col-title">Recursos</span>
+            <ul className="footer-list">
+              <li><a href="#">Centros de Denuncia</a></li>
+              <li><a href="#">Protección Digital</a></li>
+              <li><a href="#">Apoyo Especializado</a></li>
+              <li><a href="#">Timeline de Incidentes</a></li>
+              <li><a href="#">Tipos de Violencia</a></li>
+              <li><a href="#">Análisis de Plataformas</a></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <span className="footer-col-title">Consideraciones</span>
+            <ul className="footer-list">
+              <li>Datos anonimizados y verificados con ≥2 fuentes</li>
+              <li>Historias basadas en casos reales completamente anonimizados</li>
+              <li>Herramienta educativa de código abierto</li>
+              <li>Última actualización: Febrero 2026</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p className="footer-copyright">
+            © {year} HER City — Plataforma educativa sobre Violencia Digital Contra la Mujer.
           </p>
+          <div className="footer-data-badge">
+            <div className="footer-data-dot" />
+            Datos verificados · Actualización Feb 2026
+          </div>
         </div>
-
-        <div className="footer-section">
-          <h4>Fuentes de Datos</h4>
-          <ul>
-            <li>ONU Mujeres</li>
-            <li>WHO (Organización Mundial de Salud)</li>
-            <li>UNESCO</li>
-            <li>Unidad de Ciberdelincuencia de Mossos d'Esquadra & Interpol</li>
-            <li>Pew Research Center</li>
-            <li>Women's Media Center</li>
-            <li>World Bank</li>
-          </ul>
-        </div>
-
-        <div className="footer-section">
-          <h4>Recursos Principales</h4>
-          <ul>
-            <li><a href="#reporting">Centros de Denuncia</a></li>
-            <li><a href="#protection">Protección Digital</a></li>
-            <li><a href="#support">Apoyo Especializado</a></li>
-            <li><a href="#timeline">Historia del Problema</a></li>
-          </ul>
-        </div>
-
-        <div className="footer-section">
-          <h4>Consideraciones Éticas</h4>
-          <p>
-            Todos los datos han sido anonimizados y verificados. 
-            Las historias están basadas en casos reales pero totalmente anonimizadas 
-            para proteger la privacidad de las víctimas.
-          </p>
-        </div>
-      </div>
-
-      <div className="footer-bottom">
-        <p>
-          Copyright {currentYear}. Plataforma educativa sobre Violencia Digital Contra la Mujer.
-          Todos los derechos reservados.
-        </p>
-        <p className="footer-note">
-          Última actualización: Febrero 2026. 
-          Datos basados en fuentes oficiales de ONU, WHO, UNESCO, CSIRT e instituciones verificadas.
-        </p>
       </div>
     </footer>
   );

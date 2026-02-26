@@ -11,14 +11,20 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate }) => {
   const [isDark, setIsDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
     const shouldBeDark = savedTheme ? savedTheme === 'dark' : prefersDark;
     setIsDark(shouldBeDark);
     document.documentElement.setAttribute('data-theme', shouldBeDark ? 'dark' : 'light');
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const toggleTheme = () => {
@@ -31,91 +37,56 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onNavigate }) => {
   const handleNavigate = (view: View) => {
     onNavigate(view);
     setIsMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const navItems: { view: View; label: string }[] = [
+    { view: 'home',      label: 'Inicio' },
+    { view: 'violence',  label: 'Tipos de Violencia' },
+    { view: 'platforms', label: 'Plataformas' },
+    { view: 'timeline',  label: 'Timeline' },
+    { view: 'stories',   label: 'Historias' },
+    { view: 'resources', label: 'Recursos' },
+  ];
 
   return (
-    <nav className="navigation">
+    <nav className={`navigation ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
-        <button 
-          className="nav-logo"
-          onClick={() => handleNavigate('home')}
-        >
+        <button className="nav-logo" onClick={() => handleNavigate('home')}>
+          <div className="nav-logo-icon">H</div>
           HER City
         </button>
 
-        <button 
+        <button
           className={`hamburger ${isMenuOpen ? 'active' : ''}`}
-          onClick={toggleMenu}
-          aria-label="Abrir menú"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <span /><span /><span />
         </button>
 
         <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          <li>
-            <button
-              className={`nav-link ${currentView === 'home' ? 'active' : ''}`}
-              onClick={() => handleNavigate('home')}
-            >
-              Inicio
-            </button>
-          </li>
-          <li>
-            <button
-              className={`nav-link ${currentView === 'violence' ? 'active' : ''}`}
-              onClick={() => handleNavigate('violence')}
-            >
-              Tipos de Violencia
-            </button>
-          </li>
-          <li>
-            <button
-              className={`nav-link ${currentView === 'platforms' ? 'active' : ''}`}
-              onClick={() => handleNavigate('platforms')}
-            >
-              Plataformas
-            </button>
-          </li>
-          <li>
-            <button
-              className={`nav-link ${currentView === 'timeline' ? 'active' : ''}`}
-              onClick={() => handleNavigate('timeline')}
-            >
-              Timeline
-            </button>
-          </li>
-          <li>
-            <button
-              className={`nav-link ${currentView === 'stories' ? 'active' : ''}`}
-              onClick={() => handleNavigate('stories')}
-            >
-              Historias
-            </button>
-          </li>
-          <li>
-            <button
-              className={`nav-link ${currentView === 'resources' ? 'active' : ''}`}
-              onClick={() => handleNavigate('resources')}
-            >
-              Recursos
-            </button>
-          </li>
+          {navItems.map(({ view, label }) => (
+            <li key={view}>
+              <button
+                className={`nav-link ${currentView === view ? 'active' : ''}`}
+                onClick={() => handleNavigate(view)}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
         </ul>
 
-        <button 
-          className="theme-toggle"
-          onClick={toggleTheme}
-          title={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          aria-label="Cambiar modo oscuro"
-        >
-          {isDark ? '☀' : '☾'}
-        </button>
+        <div className="nav-actions">
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            title={isDark ? 'Modo claro' : 'Modo oscuro'}
+          >
+            {isDark ? '☀' : '☾'}
+          </button>
+        </div>
       </div>
     </nav>
   );

@@ -1,143 +1,106 @@
 import React, { useState } from 'react';
-import { reportingChannels, supportOrganizations, protectionTips } from '../data/dataStore';
+import { reportingChannels, supportOrganizations, protectionTips } from '../data/index';
 import '../styles/Resources.css';
 
-interface ResourceDashboardProps {
-  detailed?: boolean;
-  onViewChange?: (view: string) => void;
-}
+type Tab = 'report' | 'protect' | 'support';
 
-type TabType = 'report' | 'protect' | 'support';
+const Resources: React.FC = () => {
+  const [tab, setTab] = useState<Tab>('report');
 
-const ResourceDashboard: React.FC<ResourceDashboardProps> = ({ detailed = false, onViewChange }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('report');
-
-  const handleTabChange = (tab: TabType) => {
-    setActiveTab(tab);
-  };
+  const tabs: { id: Tab; label: string; icon: string }[] = [
+    { id: 'report',   label: 'Denunciar',   icon: '🚨' },
+    { id: 'protect',  label: 'Protegerse',  icon: '🛡️' },
+    { id: 'support',  label: 'Apoyo',       icon: '🤝' },
+  ];
 
   return (
-    <section className={`resource-dashboard ${detailed ? 'detailed' : ''}`}>
-      <div className="section-container">
-        <div className="section-header">
-          <h2>Recursos y Apoyo</h2>
-          <p className="section-description">
-            Información sobre denuncia, protección y apoyo psicológico
-          </p>
+    <section className="resources-section">
+      <div className="resources-inner">
+        <span className="section-label">Herramientas & Apoyo</span>
+        <h2 className="section-title">Recursos Verificados</h2>
+        <p className="section-desc">
+          Organismos oficiales, consejos de seguridad y organizaciones especializadas
+          para actuar frente a cualquier forma de violencia digital.
+        </p>
+
+        {/* Tabs */}
+        <div className="res-tabs">
+          {tabs.map(t => (
+            <button
+              key={t.id}
+              className={`res-tab-btn ${tab === t.id ? 'active' : ''}`}
+              onClick={() => setTab(t.id)}
+            >
+              <span className="res-tab-icon">{t.icon}</span>
+              {t.label}
+            </button>
+          ))}
         </div>
 
-        <div className="tabs-container">
-          <div className="tabs-menu">
-            <button
-              className={`tab-button ${activeTab === 'report' ? 'active' : ''}`}
-              onClick={() => handleTabChange('report')}
-            >
-              Reportar
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'protect' ? 'active' : ''}`}
-              onClick={() => handleTabChange('protect')}
-            >
-              Protegerse
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'support' ? 'active' : ''}`}
-              onClick={() => handleTabChange('support')}
-            >
-              Apoyo
-            </button>
+        {/* Report */}
+        {tab === 'report' && (
+          <div className="res-report-grid">
+            {reportingChannels.map(ch => (
+              <div key={ch.id} className="res-report-card">
+                <div className="res-card-header">
+                  <h3>{ch.name}</h3>
+                  <span className="res-urgency">{ch.urgency}</span>
+                </div>
+                <p className="res-description">{ch.description}</p>
+                <div className="res-meta">
+                  <div className="res-meta-item">
+                    <span className="res-meta-key">Jurisdicción</span>
+                    <span className="res-meta-val">{ch.jurisdiction}</span>
+                  </div>
+                  <div className="res-meta-item">
+                    <span className="res-meta-key">Disponibilidad</span>
+                    <span className="res-meta-val">{ch.availability}</span>
+                  </div>
+                </div>
+                <a href={ch.url} target="_blank" rel="noopener noreferrer" className="res-cta-btn">
+                  Acceder al Recurso →
+                </a>
+              </div>
+            ))}
           </div>
+        )}
 
-          <div className="tabs-content">
-            {activeTab === 'report' && (
-              <div className="tab-panel">
-                <div className="resources-grid">
-                  {reportingChannels.map(channel => (
-                    <div key={channel.id} className="resource-card">
-                      <div className="resource-header">
-                        <h3>{channel.name}</h3>
-                        <span className="urgency-badge urgent">{channel.urgency}</span>
-                      </div>
-                      <p className="resource-description">{channel.description}</p>
-                      <div className="resource-details">
-                        <div className="detail">
-                          <span className="detail-label">Jurisdicción:</span>
-                          <span className="detail-value">{channel.jurisdiction}</span>
-                        </div>
-                        <div className="detail">
-                          <span className="detail-label">Disponibilidad:</span>
-                          <span className="detail-value">{channel.availability}</span>
-                        </div>
-                      </div>
-                      <a href={channel.url} target="_blank" rel="noopener noreferrer" className="resource-button">
-                        Reportar Ahora
-                      </a>
-                    </div>
-                  ))}
-                </div>
+        {/* Protect */}
+        {tab === 'protect' && (
+          <div className="res-tips-grid">
+            {protectionTips.map((tip, i) => (
+              <div key={i} className="res-tip-card">
+                <div className="res-tip-num">{i + 1}</div>
+                <h4>{tip.title}</h4>
+                <p>{tip.description}</p>
+                <ul className="res-tip-list">
+                  {tip.actions.map((a, j) => <li key={j}>{a}</li>)}
+                </ul>
               </div>
-            )}
-
-            {activeTab === 'protect' && (
-              <div className="tab-panel">
-                <div className="protection-grid">
-                  {protectionTips.map((tip, index) => (
-                    <div key={index} className="protection-card">
-                      <div className="tip-number">{index + 1}</div>
-                      <h4>{tip.title}</h4>
-                      <p>{tip.description}</p>
-                      <ul className="tip-list">
-                        {tip.actions.map((action, idx) => (
-                          <li key={idx}>{action}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'support' && (
-              <div className="tab-panel">
-                <div className="support-grid">
-                  {supportOrganizations.map(org => (
-                    <div key={org.id} className="support-card">
-                      <div className="org-header">
-                        <h3>{org.name}</h3>
-                        <span className="focus-badge">{org.focus}</span>
-                      </div>
-                      <p className="org-description">{org.description}</p>
-                      <div className="org-services">
-                        <span className="service-label">Servicios:</span>
-                        <div className="services-list">
-                          {org.services.map((service, idx) => (
-                            <span key={idx} className="service-tag">{service}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <a href={org.website} target="_blank" rel="noopener noreferrer" className="org-button">
-                        Contactar
-                      </a>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            ))}
           </div>
-        </div>
+        )}
 
-        {!detailed && (
-          <div className="cta-section">
-            <h3>Información Detallada</h3>
-            <p>Accede a recursos completos organizados por categoría</p>
-            <div className="cta-buttons">
-              <button
-                className="cta-button"
-                onClick={() => onViewChange?.('informacion-recursos')}
-              >
-                Ver Recursos Completos
-              </button>
-            </div>
+        {/* Support */}
+        {tab === 'support' && (
+          <div className="res-support-grid">
+            {supportOrganizations.map(org => (
+              <div key={org.id} className="res-org-card">
+                <div className="res-org-header">
+                  <h3>{org.name}</h3>
+                  <span className="res-focus">{org.focus}</span>
+                </div>
+                <p className="res-org-desc">{org.description}</p>
+                <div className="res-services">
+                  {org.services.map((s, i) => (
+                    <span key={i} className="res-service-tag">{s}</span>
+                  ))}
+                </div>
+                <a href={org.website} target="_blank" rel="noopener noreferrer" className="res-cta-btn">
+                  Contactar →
+                </a>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -145,4 +108,4 @@ const ResourceDashboard: React.FC<ResourceDashboardProps> = ({ detailed = false,
   );
 };
 
-export default ResourceDashboard;
+export default Resources;

@@ -3,90 +3,89 @@ import { stories } from '../data/dataStore';
 import '../styles/Stories.css';
 
 const Stories: React.FC = () => {
-  const [expandedStory, setExpandedStory] = useState<string | null>(null);
-
-  const toggleStory = (id: string) => {
-    setExpandedStory(expandedStory === id ? null : id);
-  };
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <section className="stories">
-      <div className="stories-header">
-        <h2>Historias Reales</h2>
-        <p>Testimonios anonimizados de impacto real de la violencia digital</p>
-      </div>
-
-      <div className="stories-grid">
-        {stories.map((story) => (
-          <article
-            key={story.id}
-            className={`story-card ${expandedStory === story.id ? 'expanded' : ''}`}
-          >
-            <button
-              className="story-trigger"
-              onClick={() => toggleStory(story.id)}
-            >
-              <div className="story-preview">
-                <h3>{story.title}</h3>
-                <div className="story-meta">
-                  <span className="badge violence-type">{story.violenceType}</span>
-                  <span className="badge platform">{story.platform}</span>
-                  <span className="badge age">{story.ageGroup}</span>
-                </div>
-                <p className="story-duration">Duración: {story.duration}</p>
-              </div>
-              <span className="expand-icon">+</span>
-            </button>
-
-            {expandedStory === story.id && (
-              <div className="story-full">
-                <div className="story-section">
-                  <h4>La Historia</h4>
-                  <p>{story.narrative}</p>
-                </div>
-
-                <div className="story-section">
-                  <h4>Impacto</h4>
-                  <div className="impact-box">
-                    <p>{story.impact}</p>
-                  </div>
-                </div>
-
-                <div className="story-section">
-                  <h4>Ayuda Buscada</h4>
-                  <div className="help-tags">
-                    {story.helpSought.map((help, index) => (
-                      <span key={index} className="help-tag">{help}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="story-section">
-                  <h4>Resolución</h4>
-                  <p>{story.resolution}</p>
-                </div>
-
-                <div className="story-reflection">
-                  <p>
-                    Estas historias no son únicas. Representan a millones de mujeres que 
-                    sufren violencia digital cada año. Tu acción puede marcar diferencia.
-                  </p>
-                </div>
-              </div>
-            )}
-          </article>
-        ))}
-      </div>
-
-      <div className="stories-cta">
-        <h3>Si Esto Te Sucede a Ti</h3>
-        <p>
-          No estás sola. Hay recursos, apoyo y justicia disponibles. 
-          Los pasos iniciales más importantes son: reportar, documentar y buscar apoyo especializado.
+    <section className="stories-section">
+      <div className="stories-inner">
+        <span className="section-label">7 Testimonios Verificados</span>
+        <h2 className="section-title">Historias Reales</h2>
+        <p className="section-desc">
+          Casos completamente anonimizados que muestran el impacto humano de la violencia digital.
+          Cada historia representa a miles de mujeres en situaciones similares.
         </p>
-        <div className="cta-buttons">
-          <button className="btn btn-primary">Denunciar un Incidente</button>
-          <button className="btn btn-secondary">Ver Recursos de Ayuda</button>
+
+        <div className="stories-grid">
+          {stories.map((story, idx) => {
+            const isOpen = expanded === story.id;
+            return (
+              <article
+                key={story.id}
+                className={`story-card ${isOpen ? 'expanded' : ''}`}
+              >
+                <button
+                  className="story-trigger"
+                  onClick={() => setExpanded(isOpen ? null : story.id)}
+                  aria-expanded={isOpen}
+                >
+                  <div className="story-preview">
+                    <span className="story-number">{String(idx + 1).padStart(2, '0')}</span>
+                    <span className="story-type-tag">{story.violenceType.replace(/-/g, ' ')}</span>
+                    <h3 className="story-title">{story.title}</h3>
+                    <div className="story-meta-row">
+                      <span className="story-badge story-badge-platform">{story.platform}</span>
+                      <span className="story-badge story-badge-age">{story.ageGroup}</span>
+                      <span className="story-badge story-badge-duration">{story.duration}</span>
+                    </div>
+                    <div className="story-expand-icon">{isOpen ? '×' : '+'}</div>
+                  </div>
+                </button>
+
+                {isOpen && (
+                  <div className="story-full">
+                    <div className="story-section">
+                      <span className="story-section-title">La Historia</span>
+                      <p>{story.narrative}</p>
+                    </div>
+
+                    <div className="story-section">
+                      <span className="story-section-title">Impacto Psicológico y Social</span>
+                      <div className="story-impact-box">{story.impact}</div>
+                    </div>
+
+                    <div className="story-section">
+                      <span className="story-section-title">Ayuda Buscada</span>
+                      <div className="story-help-tags">
+                        {story.helpSought.map((h, i) => (
+                          <span key={i} className="story-help-tag">{h}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="story-section">
+                      <span className="story-section-title">Resolución</span>
+                      <p>{story.resolution}</p>
+                    </div>
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
+
+        {/* CTA */}
+        <div className="stories-cta">
+          <div className="stories-cta-text">
+            <h3>Si Estás Viviendo Esto</h3>
+            <p>
+              No estás sola. Existen recursos, organizaciones especializadas y apoyo legal
+              disponibles. Los primeros pasos son documentar, reportar y buscar ayuda.
+            </p>
+          </div>
+          <div className="stories-cta-actions">
+            <a href="#resources" className="btn btn-gold">Ver Recursos →</a>
+            <a href="#reporting" className="btn btn-ghost">Cómo Denunciar</a>
+          </div>
         </div>
       </div>
     </section>
