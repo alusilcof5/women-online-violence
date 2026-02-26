@@ -3,7 +3,7 @@
 ══════════════════════════════════════════════════════════════ */
 
 .stories-section {
-  background: var(--bg);
+  background: var(--bg-section);
   padding: 96px 24px;
 }
 
